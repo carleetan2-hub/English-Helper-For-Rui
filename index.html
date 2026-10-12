@@ -1,0 +1,279 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>英语学习小助手</title><link rel="icon" href="data:,">
+<style>
+.dot{display:inline-block;width:26px;height:26px;border-radius:50%;margin:0 4px;border:3px solid var(--c)}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f3f7ff;--c:#fff;--ink:#2b2a33;--mu:#7a7686;--ln:#dde5f5;--p:#5b8def;--p2:#e6edff;--gb:#e3f6ec;--g:#1f9d63;--rb:#fdeae7;--r:#d4402f;--y:#e3ecff}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#1e1c24;--c:#2a2733;--ink:#f3f0f8;--mu:#a9a3b8;--ln:#3b3748;--p2:#26304a;--gb:#173a2a;--rb:#4a2420;--y:#2a3350}}
+:root[data-theme=dark]{--bg:#1e1c24;--c:#2a2733;--ink:#f3f0f8;--mu:#a9a3b8;--ln:#3b3748;--p2:#26304a;--gb:#173a2a;--rb:#4a2420;--y:#2a3350}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:720px;margin:0 auto;padding:12px 14px 90px}
+nav{position:fixed;left:0;right:0;bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);display:flex;background:var(--c);border-top:1px solid var(--ln)}
+nav button{flex:1;background:none;border:0;padding:10px 2px;font-size:12px;color:var(--mu)}nav button b{display:block;font-size:20px}nav .on{color:var(--p);font-weight:700}
+.card{background:var(--c);border:1px solid var(--ln);border-radius:20px;padding:16px;margin:12px 0;overflow-x:auto}
+h1{font-size:22px;margin:4px 0}h2{font-size:17px;margin:0 0 8px}.mu{color:var(--mu);font-size:13px}
+button.b{background:var(--p);color:#fff;border:0;border-radius:14px;padding:12px 18px;font-size:16px;font-weight:700;margin:4px 4px 4px 0}button.b.s{background:var(--p2);color:var(--p)}button.b:disabled{opacity:.4}
+.opt{display:block;width:100%;text-align:left;background:var(--c);color:var(--ink);border:2px solid var(--ln);border-radius:14px;padding:12px;margin:8px 0;font-size:16px}
+.big{font-size:34px;font-weight:800;margin:10px 0;word-break:break-word}.bar{height:10px;background:var(--ln);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--p)}
+input[type=text],textarea,select{width:100%;font:inherit;padding:12px;border:2px solid var(--ln);border-radius:12px;background:var(--c);color:var(--ink)}
+.fb{padding:12px;border-radius:14px;margin:10px 0}.ok{background:var(--gb);color:var(--g)}.no{background:var(--rb);color:var(--r)}
+.pill{display:inline-block;background:var(--y);border-radius:99px;padding:2px 10px;font-size:12px;margin:2px}
+.tile{display:inline-block;width:44px;height:44px;margin:4px;border:2px solid var(--p);background:var(--p2);color:var(--p);border-radius:12px;font-size:20px;font-weight:700}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--ln);padding:8px 0}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:6px 4px;border-bottom:1px solid var(--ln);text-align:left}
+@media(min-width:900px){main{max-width:900px;padding:28px 20px 100px}nav{justify-content:center}nav button{max-width:170px}.big{font-size:42px}body{font-size:17px}}@media(max-width:480px){.big{font-size:28px}.opt{padding:14px}}
+.sp{border:0;background:var(--p2);color:var(--p);border-radius:50%;width:26px;height:26px;font-size:13px;padding:0;margin:0 4px;vertical-align:middle}#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--c);padding:8px 14px;border-radius:99px;font-size:14px;display:none}details{margin-top:4px}summary{color:var(--p);cursor:pointer;font-size:14px}
+:root[data-p]{--p2:color-mix(in srgb,var(--p) 14%,var(--c));--y:color-mix(in srgb,var(--p) 12%,var(--c));--bg:color-mix(in srgb,var(--p) 7%,var(--c))}:root{--hr:110deg}:root[data-p=blue]{--p:#5b8def;--hr:110deg}:root[data-p=orange]{--p:#f08a3c;--hr:-85deg}:root[data-p=purple]{--p:#9a7bf0;--hr:160deg}
+.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--p),color-mix(in srgb,var(--p) 50%,#8fe3c8));display:inline-flex;align-items:center;justify-content:center;font-size:28px}
+</style></head><body><main id="app"></main>
+<nav id="nav"></nav><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),D=864e5,now=()=>Date.now(),mem={};
+const store={g(){try{return localStorage.getItem('eng1')}catch(e){return mem.x}},s(v){try{localStorage.setItem('eng1',v)}catch(e){mem.x=v}}};
+let S;try{S=JSON.parse(store.g())}catch(e){}
+S=S||{cfg:{min:15,exam:'',on:{}},extra:[],att:[],m:{},diag:null,run:null};
+S.gr=S.gr||{};if(!S.cfg.tv){S.cfg.theme='blue';S.cfg.tv=1}if(S.run&&S.run.ctx=='gram'&&!S.run.v2)S.run=null;
+const save=()=>store.s(JSON.stringify(S));
+// ===== 数据：六上词表(家长提供txt，来源待教材核验)；专有名词暂未收入 =====
+const RAW={1:"save=储蓄，存（钱）|spend=花费，用（钱）|pocket money=零花钱|shopkeeper=店主|golden touch=点石成金|gold=黄金|everything=每件事物|smile=微笑|clang=叮当声|saving=存钱|crayon=彩色蜡笔|surprised=吃惊的|peel=（水果、蔬菜的）外皮|health=健康|than=比|grey=灰色（的）|dinosaur=恐龙|line=线，线条|debate=讨论，辩论|fairy tale=童话；神话|explore=探讨，探究|truth=事实，真相|reason=原因，理由",2:"opinion=意见，看法|fact=事实，真相",3:"desert=沙漠|grassland=草原|lake=湖泊|natural=自然的|wonder=奇迹，奇观|square kilometre=平方千米|deep=深的|plateau=高原|waterfall=瀑布|wide=宽的|famous=著名的|traveller=旅行者|interested=感兴趣的|young=年幼的；年轻的",4:"invention=发明（物）|wheelchair=轮椅|phone=电话|tooth=牙齿（复数teeth）|easily=容易地|inventor=发明家|middle=中间|bottom=底部|fine=健康的；好的|window=窗户|bird feeder=鸟食罐|cloth=布料|string=线，细绳|glue=黏合，粘贴|fold=折叠|fan=扇子|instrument=乐器|material=材料|drum=鼓",5:"matter=重要，有关系|fever=发烧|runny=流鼻涕的|sore=疼痛的|throat=喉咙|headache=头痛|toothache=牙痛|flu=流感|virus=病毒|blackboard=黑板|dark=昏暗的；暗处|gladly=高兴地",6:"view=视野；视线|bridge=桥|neck=脖子|luck=好运|speak=会说（某种语言）|April=四月|splash=溅湿，泼|cultural=文化的|pretty=好看的"};
+const BASE=[];for(const u in RAW)RAW[u].split('|').forEach(p=>{const[e,z]=p.split('=');BASE.push({id:e,en:e,zh:z,pk:'六上 U'+u,src:'外研社六上词汇表(家长提供,待教材核验)'})});
+const EX={};`save|seɪv|I save ten yuan every week.
+spend|spend|I spend money on books.
+pocket money|ˈpɒkɪt ˈmʌni|I get pocket money on Sunday.
+shopkeeper|ˈʃɒpkiːpə|The shopkeeper is very kind.
+golden touch|ˈɡəʊldən tʌtʃ|King Midas has a golden touch.
+gold|ɡəʊld|The ring is made of gold.
+everything|ˈevriθɪŋ|Money isn't everything.
+smile|smaɪl|She has a nice smile.
+clang|klæŋ|I hear a loud clang.
+saving|ˈseɪvɪŋ|Saving money is a good habit.
+crayon|ˈkreɪɒn|I draw a sun with a red crayon.
+surprised|səˈpraɪzd|He is surprised to see me.
+peel|piːl|Peel the banana before you eat it.
+health|helθ|Sleep is good for your health.
+than|ðæn|A dinosaur is bigger than a dog.
+grey|ɡreɪ|The cat is grey.
+dinosaur|ˈdaɪnəsɔː|I like the big dinosaur.
+line|laɪn|Draw a line on the paper.
+debate|dɪˈbeɪt|We have a debate today.
+fairy tale|ˈfeəri teɪl|I read a fairy tale at night.
+explore|ɪkˈsplɔː|Let's explore the forest.
+truth|truːθ|Please tell me the truth.
+reason|ˈriːzn|What is the reason?
+opinion|əˈpɪnjən|What's your opinion?
+fact|fækt|That is a fact.
+desert|ˈdezət|The desert is very hot.
+grassland|ˈɡrɑːslænd|Cows live on the grassland.
+lake|leɪk|We swim in the lake.
+natural|ˈnætʃrəl|It is a natural wonder.
+wonder|ˈwʌndə|The waterfall is a wonder.
+square kilometre|skweə ˈkɪləmiːtə|The lake is one square kilometre.
+deep|diːp|The lake is very deep.
+plateau|ˈplætəʊ|The plateau is very high.
+waterfall|ˈwɔːtəfɔːl|The waterfall is beautiful.
+wide|waɪd|The river is wide.
+famous|ˈfeɪməs|The Great Wall is famous.
+traveller|ˈtrævələ|The traveller has a big bag.
+interested|ˈɪntrəstɪd|I am interested in music.
+young|jʌŋ|My brother is young.
+invention|ɪnˈvenʃn|The phone is a great invention.
+wheelchair|ˈwiːltʃeə|He uses a wheelchair.
+phone|fəʊn|My phone is on the desk.
+tooth|tuːθ|I have a bad tooth.
+easily|ˈiːzɪli|She can swim easily.
+inventor|ɪnˈventə|The inventor is clever.
+middle|ˈmɪdl|Sit in the middle.
+bottom|ˈbɒtəm|The book is at the bottom.
+fine|faɪn|I'm fine, thank you.
+window|ˈwɪndəʊ|Open the window, please.
+bird feeder|ˈbɜːd ˈfiːdə|I make a bird feeder.
+cloth|klɒθ|Use a cloth to clean it.
+string|strɪŋ|Tie it with a string.
+glue|ɡluː|Use glue to stick paper.
+fold|fəʊld|Fold the paper in half.
+fan|fæn|I make a paper fan.
+instrument|ˈɪnstrəmənt|The piano is an instrument.
+material|məˈtɪəriəl|Wood is a good material.
+drum|drʌm|He plays the drum.
+matter|ˈmætə|What's the matter?
+fever|ˈfiːvə|I have a fever.
+runny|ˈrʌni|I have a runny nose.
+sore|sɔː|I have a sore throat.
+throat|θrəʊt|My throat hurts.
+headache|ˈhedeɪk|I have a headache.
+toothache|ˈtuːθeɪk|He has a toothache.
+flu|fluː|I have the flu.
+virus|ˈvaɪrəs|A virus makes me ill.
+blackboard|ˈblækbɔːd|Look at the blackboard.
+dark|dɑːk|It is dark outside.
+gladly|ˈɡlædli|I will gladly help you.
+view|vjuː|The view is beautiful.
+bridge|brɪdʒ|The bridge is long.
+neck|nek|The giraffe has a long neck.
+luck|lʌk|Good luck!
+speak|spiːk|I can speak English.
+April|ˈeɪprəl|My birthday is in April.
+splash|splæʃ|Don't splash me!
+cultural|ˈkʌltʃərəl|It is a cultural event.
+pretty|ˈprɪti|She has a pretty dress.`.split('\n').forEach(l=>{const a=l.split('|');EX[a[0]]=a});BASE.forEach(w=>{const e=EX[w.en];if(e){w.ipa='/'+e[1]+'/';w.ex=e[2]}});
+const B5=['buy','save','shopkeeper','spend','pocket money'],B6=['How much','in need','Long long ago','come true','save money'],IA=['is','are'];
+// 题目全部摘自家长提供的《SunShine 阳光课堂》六上U1练习册，答案以册内为准
+const CL=[['c1','Uncle Tom has a small shop. He sells school things. He is a ____.',B5,'shopkeeper','④'],['c2','____ do you get every week? (How much ____ ?) —请选：How much ____ do you get every week?',B5,'pocket money','④'],['c3','We should ____ our money for the right things.',B5,'save','④'],['c4','I will ____ 30 yuan on pens and books.',B5,'spend','④'],['c5',"There's only a little milk in the fridge. Let's go to ____ some.",B5,'buy','④'],['c6','—How much ____ the robot? —It’s 35 yuan.',IA,'is','⑤'],['c7','—How much ____ these books? —They’re 50 yuan.',IA,'are','⑤'],['c8','____, there was a king called Midas.',B6,'Long long ago','⑥'],['c9','Do you have a wish? I can make it ____.',B6,'come true','⑥']].map(a=>({id:a[0],q:a[1].replace(/^____ do you get every week\? \(How much ____ \?\) —请选：/,''),o:a[2],a:a[3],pk:'六上 U1',src:'SunShine阳光课堂六上U1 练习'+a[4]}));
+CL.push(...[["How much ____ the cola? —It's five yuan.",['is', 'are'],'is','问价 is/are'],["—How much ____ the apples? —They're ten yuan.",['is', 'are'],'are','问价 is/are'],['Yesterday I ____ my pocket money on a toy.',['spend', 'spent', 'spending'],'spent','一般过去时'],['—How much ____ the toy? —It was 20 yuan.',['was', 'were', 'is'],'was','was/were'],['—How much ____ the books? —They were 15 yuan.',['was', 'were', 'are'],'were','was/were'],['A dinosaur is ____ than a dog.',['big', 'bigger', 'biggest'],'bigger','比较级'],['I brush my ____ every day.',['tooth', 'teeth', 'toothes'],'teeth','单复数'],["—What's the ____? —I have a fever.",['matter', 'mad', 'many'],'matter','健康问答'],["The lake is very ____. We can't see the bottom.",['deep', 'wide', 'famous'],'deep','形容词'],['She is ____ in music.',['interested', 'interesting', 'interest'],'interested','-ed形容词'],['He is ____ to see a big dinosaur.',['surprised', 'surprise', 'surprising'],'surprised','-ed形容词'],['Please ____ the banana before you eat it.',['peel', 'fold', 'glue'],'peel','动词词义']].map((a,i)=>({id:'k'+(i+1),q:a[0],o:a[1],a:a[2],kp:a[3],pk:'六上 知识点',src:'AI生成·待核验'})));
+CL.push(...[["Tom ____ to school by bike every day.", ["go", "goes", "going"], "goes", "一般现在时三单"], ["Last Sunday, I ____ a new pen.", ["buy", "bought", "buys"], "bought", "一般过去时"], ["Yesterday Jenny ____ her money for a gift.", ["saves", "saved", "save"], "saved", "一般过去时"], ["I ____ visit my grandma next week.", ["will", "was", "did"], "will", "一般将来时"], ["Look! The boy ____ a kite now.", ["flies", "is flying", "flew"], "is flying", "现在进行时"], ["My birthday is ____ April.", ["in", "on", "at"], "in", "时间介词"], ["We have a party ____ Sunday.", ["in", "on", "at"], "on", "时间介词"], ["There ____ a lot of water in the lake.", ["is", "are", "be"], "is", "there be"], ["How many ____ are there on the desk?", ["book", "books", "bookes"], "books", "可数名词复数"], ["She didn't ____ the answer.", ["know", "knew", "knows"], "know", "过去时否定"], ["My bag is ____ than yours.", ["heavy", "heavier", "heaviest"], "heavier", "比较级"], ["He has a fever and a ____ throat.", ["sore", "sour", "sure"], "sore", "词汇运用"], ["I can ____ English, but I can't speak French.", ["speak", "say", "tell"], "speak", "词义辨析"], ["Please ____ the paper in half.", ["fold", "fan", "fine"], "fold", "词汇运用"], ["—What's the matter? —I have a ____.", ["headache", "blackboard", "bridge"], "headache", "健康问答"]].map((a,i)=>({id:'k'+(i+13),q:a[0],o:a[1],a:a[2],kp:a[3],pk:'六上 知识点',src:'AI生成·待核验'})));
+`She ____ got a new bike.|have/has/having|has|have got
+I ____ got two brothers.|have/has/am|have|have got
+This is ____ book. (Amy)|Amy's/Amys/Amy|Amy's|所有格
+These are the ____ toys.|children's/childrens/children|children's|所有格
+He can ____ English.|speak/speaks/speaking|speak|can
+I like ____ pictures.|draw/drawing/draws|drawing|like doing
+She likes ____ stamps.|collect/collecting/collects|collecting|like doing
+There are two ____ books in the library.|thousand/thousands/thousand of|thousand|thousand
+I like tea, ____ I don't like coffee.|and/but/so|but|连词
+Do you want tea ____ coffee?|and/or/but|or|连词
+There ____ two pens on the desk.|is/are/am|are|there be
+How ____ is the milk? —Five yuan.|much/many/old|much|How much/many
+Listen! They ____ in the music room.|sing/are singing/sang|are singing|现在进行时
+Tomorrow we ____ go to the zoo.|will/did/are|will|将来时
+She often ____ TV after dinner.|watch/watches/watching|watches|一般现在时
+He ____ like carrots.|don't/doesn't/isn't|doesn't|一般现在时
+Please give the book to ____.|I/my/me|me|代词
+That bag is ____.|mine/my/me|mine|代词
+I eat ____ apple every day.|a/an/the|an|冠词
+____ is your birthday? —In April.|When/Where/Who|When|疑问词
+____ bag is this? —It's Tom's.|Whose/Who/What|Whose|疑问词
+____ run in the classroom!|Don't/Doesn't/Not|Don't|祈使句
+It's fun ____ play football.|to/for/of|to|固定句型`.split('\n').forEach((l,i)=>{const a=l.split('|');CL.push({id:'k'+(i+28),q:a[0],o:a[1].split('/'),a:a[2],kp:a[3],pk:'六上 知识点',src:'AI生成·待核验'})});
+const GR=[["一般现在时", "描述习惯、事实、爱好。标志词：every day/week, always, often, sometimes, never。be动词用am/is/are；实义动词三单加s/es（study→studies，have→has）。否定：don't/doesn't+动词原形；疑问：Do/Does开头。<br>例：He spends his pocket money every week.（他每周花零花钱。）", ["一般现在时"]], ["名词所有格", "单数名词加's（Amy's present）；以s结尾的复数直接加'（teachers' room）；不规则复数加's（children's home）。", ["所有格"]], ["How much / How many", "How much问价格或不可数名词的量（How much is the robot? How much milk?）；How many+可数名词复数问数量。be动词随后面的名词单复数。", ["问价", "How"]], ["have got / has got", "表示“拥有”。I/you/we/they用have got，he/she/it用has got。否定haven't/hasn't got；疑问Have/Has…got…?", ["have got"]], ["形容词比较级", "A+be+比较级+than+B。多数加er（taller），e结尾加r（nicer），辅音+y变ier（heavy→heavier），重读闭音节双写（big→bigger）。", ["比较级"]], ["情态动词can", "can+动词原形，没有人称变化；否定can't；Can you…?回答Yes, I can./No, I can't.", ["can"]], ["like + doing", "like后接动词-ing表爱好：I like collecting stamps.", ["like doing"]], ["数词 thousand", "具体数字后thousand不加s（two thousand）；thousands of表示“成千上万”。", ["thousand"]], ["连词 and / but / or", "and表并列，but表转折，or用于选择疑问句（tea or coffee?）。", ["连词"]], ["There be 句型", "There is+单数/不可数；There are+复数；就近原则；否定加not，疑问把Is/Are提到句首。", ["there be"]], ["现在进行时", "am/is/are+动词-ing，表示正在做。标志词：look, listen, now。", ["现在进行时"]], ["一般过去时", "过去发生的事。be动词用was/were；实义动词用过去式（went, bought, saved）；否定didn't+动词原形。标志词：yesterday, last…, …ago, long long ago。", ["过去时", "was/were"]], ["一般将来时", "will+动词原形，或be going to+动词原形。标志词：tomorrow, next…", ["将来时"]], ["名词与冠词", "可数名词有单复数（child→children，tooth→teeth）；不可数名词（money, milk, water）无复数。a用于辅音音素开头，an用于元音音素开头（an apple），the表特指。", ["复数", "冠词"]], ["代词", "主格 I/you/he/she/it/we/they；宾格 me/you/him/her/it/us/them；形容词性物主代词 my/your/his/her…；名词性物主代词 mine/yours…；指示代词 this/that/these/those。", ["代词"]], ["特殊疑问词", "what什么，where哪里，when什么时候，who谁，whose谁的，which哪一个，why为什么（用because回答），how怎么样；how old问年龄，how long问长度/多久。", ["疑问词"]], ["祈使句", "以动词原形开头，表请求或命令；否定用Don't+动词原形；please可放句首或句末。", ["祈使句"]], ["介词", "时间：in（月份/年）、on（具体某天）、at（具体钟点）；方位：in/on/under/beside/near；by+交通工具（by bus）。", ["时间介词"]], ["固定句型", "It's+形容词+to do sth.（做某事是……）；What about…?（……怎么样？提建议）；选择疑问句：…or…?", ["固定句型"]]];
+const words=()=>BASE.concat(S.extra),W=id=>words().find(w=>w.id===id),isOn=pk=>S.cfg.on[pk]!==false;
+const ZH='我每周存十元。|我把钱花在书上。|我星期天拿零花钱。|店主人很好。|国王弥达斯有点石成金的本领。|这枚戒指是黄金做的。|金钱不是一切。|她笑得很甜。|我听到一声很响的叮当声。|存钱是个好习惯。|我用红色蜡笔画太阳。|他看到我很吃惊。|吃香蕉前先剥皮。|睡眠对健康有好处。|恐龙比狗大。|这只猫是灰色的。|我喜欢那只大恐龙。|在纸上画一条线。|我们今天有一场辩论。|我晚上读童话。|我们去探索森林吧。|请告诉我真相。|原因是什么？|你的看法是什么？|那是事实。|沙漠非常热。|奶牛生活在草原上。|我们在湖里游泳。|这是一处自然奇观。|瀑布是个奇观。|这个湖有一平方千米。|这个湖很深。|高原非常高。|瀑布很美。|这条河很宽。|长城很著名。|旅行者背着一个大包。|我对音乐感兴趣。|我弟弟还小。|电话是一项伟大的发明。|他使用轮椅。|我的电话在桌子上。|我有一颗坏牙。|她游得很轻松。|这位发明家很聪明。|坐在中间。|书在最下面。|我很好，谢谢。|请打开窗户。|我做了一个鸟食罐。|用布把它擦干净。|用细绳把它系好。|用胶水粘纸。|把纸对折。|我做了一把纸扇。|钢琴是一种乐器。|木头是一种好材料。|他打鼓。|怎么了？|我发烧了。|我流鼻涕。|我喉咙痛。|我的喉咙疼。|我头痛。|他牙痛。|我得了流感。|病毒让我生病。|看黑板。|外面很暗。|我很乐意帮你。|景色很美。|这座桥很长。|长颈鹿的脖子很长。|祝你好运！|我会说英语。|我的生日在四月。|别泼我水！|这是一场文化活动。|她有一条漂亮的裙子。'.split('|'),ST={"1": ["Jacob gets pocket money every week. He wants to spend it all, but Mum says, “Save some money.” At the shop, the shopkeeper shows him a gold crayon. Jacob is surprised. It costs more than his money. So he saves for two weeks and buys it. Now he knows that saving is a good habit. At home, he draws a picture of the shop. His mum asks, “Do you spend or save your money?” Jacob smiles. “I save first. Then I spend a little.” Mum says he is clever.", "雅各布每周有零花钱。他想全花掉，但妈妈说：“存一些钱吧。”在商店里，店主给他看一支金色蜡笔。雅各布很吃惊，它比他的钱贵。于是他存了两周钱，把它买下来。现在他知道存钱是个好习惯。回到家，他画了一幅商店的画。妈妈问：“你是花钱还是存钱？”雅各布笑了：“我先存钱，再花一点。”妈妈说他很聪明。"], "2": ["Duncan says, “My opinion is that dogs are smarter than cats.” Penny asks, “Is that a fact?” They look in a book. A fact is true. An opinion is what you think. Later they ask Alex. He says, “I like blue, but that is only my opinion.” “Right,” says Duncan. “Facts can be checked, but opinions can be different. We can give a reason for our opinion.”", "邓肯说：“我的看法是狗比猫聪明。”彭妮问：“那是事实吗？”他们翻书查找。事实是真的，看法是你的想法。后来他们问亚历克斯。他说：“我喜欢蓝色，但这只是我的看法。”邓肯说：“对。事实可以查证，看法可以不同。我们可以说明自己看法的理由。”"], "3": ["Alex likes to explore natural wonders. He visits a hot desert, a green grassland and a deep lake. The waterfall is very wide and famous. On the plateau, he meets a young traveller. They are both interested in nature. They talk about the lake. “It is one square kilometre,” says the traveller. “Is it deep?” Alex asks. “Yes, very deep.” They take photos and promise to explore more wonders together.", "亚历克斯喜欢探索自然奇观。他去了炎热的沙漠、绿色的草原和很深的湖。瀑布又宽又有名。在高原上，他遇到一位年轻的旅行者。他们都对大自然感兴趣。他们聊起那个湖。旅行者说：“它有一平方千米。”亚历克斯问：“它深吗？”“很深。”他们拍了照片，约定以后一起探索更多奇观。"], "4": ["John is a young inventor. He makes a bird feeder with cloth, string and glue. First he folds the cloth. Then he ties it with string. He also makes a fan from the same material. His invention can help the birds. At school, his friends are interested in his invention. A girl asks, “What material did you use?” John says, “Just cloth, string and glue. Anyone can do it easily!” They make more bird feeders together and hang them near the window.", "约翰是一位年轻的发明家。他用布、细绳和胶水做了一个鸟食罐。首先他把布折好，然后用细绳系住。他还用同样的材料做了一把扇子。他的发明可以帮助小鸟。在学校，朋友们对他的发明很感兴趣。一个女孩问：“你用了什么材料？”约翰说：“只用布、细绳和胶水。人人都能轻松做到！”他们一起做了更多鸟食罐，挂在窗户附近。"], "5": ["Green has a headache, a fever and a sore throat. His nose is runny too. “What’s the matter?” asks Mum. “It may be the flu,” says the doctor. A virus makes him ill, so he rests at home. He gladly takes his medicine. After three days, Green feels fine again. His throat is not sore and the fever is gone. “Wash your hands often,” says the doctor, “and a virus can’t catch you so easily.” Green smiles. “I will!”", "格林头痛、发烧，喉咙还痛，鼻子也在流鼻涕。妈妈问：“怎么了？”医生说：“可能是流感。”病毒让他生病了，所以他在家休息。他很乐意地吃药。三天后，格林又好了。他的喉咙不痛了，烧也退了。医生说：“要经常洗手，这样病毒就不容易找上你。”格林笑着说：“我会的！”"], "6": ["Penny stands on the bridge and enjoys the view. “Good luck!” says her friend. In April, they go to see the Water-splashing Festival. People splash water on each other. It is a pretty cultural event, and Penny wants to speak with the people there. Then Penny looks at the long bridge again. “What a pretty view!” she says. She takes a deep breath and smiles. “I love April in this place. What a lucky day!”", "彭妮站在桥上欣赏景色。朋友说：“祝你好运！”四月，他们去看泼水节。人们互相泼水。这是一个漂亮的文化活动，彭妮想和那里的人们交谈。然后彭妮又看了看那座长长的桥。她说：“多漂亮的景色！”她深吸一口气，笑了。“我爱这里的四月。多么幸运的一天！”"]},SC={"3": ["Natural Wonders", "The Sahara is the biggest hot desert in the world. The Antarctic Desert is cold, and it is bigger than the Sahara. The Qinghai-Tibet Plateau is called the Roof of the World. It is very high. Waterfalls and lakes are natural wonders too. Many travellers love to visit them.", "撒哈拉是世界上最大的热沙漠。南极荒漠很冷，比撒哈拉更大。青藏高原被称为“世界屋脊”，非常高。瀑布和湖泊也是自然奇观。许多旅行者喜欢去参观。"], "4": ["Inventions Help Us", "Wheelchairs help people move easily. Phones help us talk to people far away. Many inventions use simple materials, such as wood, cloth and glue. An inventor often asks, “How can I make life better?”", "轮椅帮助人们轻松移动。电话帮助我们和远方的人交谈。许多发明使用简单的材料，如木头、布和胶水。发明家常常问：“我怎样才能让生活更好？”"], "5": ["Flu and Viruses", "The flu is caused by a virus. When you have the flu, you may have a fever, a headache, a sore throat and a runny nose. You should rest and drink water. Washing your hands often can help you stay healthy. See a doctor if you feel worse.", "流感由病毒引起。得了流感，你可能发烧、头痛、喉咙痛、流鼻涕。你应该休息、多喝水。经常洗手有助于保持健康。如果感觉更糟，要去看医生。"]};BASE.forEach((w,i)=>w.exz=ZH[i]);
+let VO=[];const lv=()=>{try{VO=speechSynthesis.getVoices()}catch(e){}};try{lv();speechSynthesis.onvoiceschanged=lv}catch(e){}
+const toast=m=>{const e=$('#toast');e.textContent=m;e.style.display='block';setTimeout(()=>e.style.display='none',2500)};
+const speak=t=>{try{const y=speechSynthesis;lv();y.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.85;const v=VO.find(v=>/^en[-_]US/i.test(v.lang))||VO.find(v=>/^en/i.test(v.lang));if(v)u.voice=v;else if(VO.length)toast('此设备没有英文语音包，请在系统设置里添加');setTimeout(()=>{y.resume();y.speak(u)},100)}catch(e){toast('此浏览器不支持朗读')}},spk=t=>window.speechSynthesis?`<button class="sp" onclick="speak(this.dataset.t)" data-t="${t.replace(/"/g,'&quot;')}">🔊</button>`:'';
+const exH=w=>`<div>${w.ex} ${spk(w.ex)}<details><summary>显示中文</summary>${w.exz}</details></div>`;
+const sh=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+const MOD={x:'听音拼写',p:'音标',m:'词义识别',s:'拼写回忆',d:'语境拼写',c:'句子/语法'},norm=s=>s.trim().toLowerCase().replace(/\s+/g,' ');
+// ===== 掌握状态与间隔复习（间隔可配置：IV）=====
+const IV=[1,2,4,7,14,14];
+function upd(k,ok,assist){const m=S.m[k]||(S.m[k]={sr:0,iv:0,nx:0,wr:0,cw:0,n:0});m.n++;
+ if(ok&&!assist){m.sr++;m.cw=0;m.iv=IV[Math.min(m.sr-1,5)];m.nx=now()+m.iv*D}
+ else if(ok){m.cw=0;m.iv=1;m.nx=now()+D}
+ else{m.sr=0;m.cw++;m.wr++;m.iv=0;m.nx=now()+6e5}}
+function st(m){if(!m)return'未测试';if(m.sr>=3&&m.iv>=7)return'稳定掌握';if(m.sr>=1)return'初步掌握';return m.wr&&m.nx<=now()?'待复习':'学习中'}
+function etype(a,r){if(!a)return'未作答';if(a.split('').sort().join('')===r.toLowerCase().split('').sort().join(''))return'字母顺序错误';if(Math.abs(a.length-r.length)==1)return'漏/多一个字母';return'拼写不熟'}
+// ===== 任务生成 =====
+function dailyItems(extra){const n=Math.round(S.cfg.min*60/40),t=now();
+ let due=Object.keys(S.m).filter(k=>S.m[k].nx<=t).map(k=>{const[i,y]=k.split('|');return{t:y,id:i}}).filter(x=>x.t=='c'?CL.find(c=>c.id==x.id):W(x.id)).sort((a,b)=>S.m[b.id+'|'+b.t].wr-S.m[a.id+'|'+a.t].wr);
+ const cap=Math.floor(n*.6),rev=due.slice(0,cap),nn=extra?4:(due.length>=cap?0:Math.min(4,Math.max(0,n-rev.length)>8?4:2));
+ const fr=words().filter(w=>isOn(w.pk)&&!S.m[w.id+'|m']&&!S.m[w.id+'|s']).slice(0,nn);
+ let it=rev.concat(...fr.map(w=>[{t:'l',id:w.id},{t:'m',id:w.id}]),fr.map(w=>({t:'s',id:w.id})),fr.filter(w=>w.ex).map(w=>({t:'d',id:w.id})),sh(CL.filter(c=>isOn(c.pk)&&!S.m[c.id+'|c'])).slice(0,3).map(c=>({t:'c',id:c.id})),words().filter(w=>w.ipa&&S.m[w.id+'|m']&&!S.m[w.id+'|p']).slice(0,2).map(w=>({t:'p',id:w.id})));
+ return{items:it.slice(0,n+fr.length),due:due.length}}
+function diagItems(){const ws=words().filter(w=>isOn(w.pk));return ws.filter((w,i)=>i%20==3).map(w=>({t:'m',id:w.id})).concat(ws.filter((w,i)=>i%20==10).map(w=>({t:'s',id:w.id})),['c1','c3','c6','c9'].map(i=>({t:'c',id:i})))}
+function start(ctx,items){if(!items.length)return go('home');S.run={id:now(),ctx,items,i:0,ok:0,tot:0};save();go('run')}
+// ===== 答题 =====
+let cur={},fox=['太棒了！🎉','答对啦！⭐','没错，你的脑袋在发光💡','漂亮，这个词稳了！','小恐龙为你鼓掌👏','哇，越来越熟练啦🚀','这题难不倒你😎','记忆又升级了！','干得好，继续冲💪','英语小达人上线🦖'],oops=['没关系，错误是最好的老师～','差一点！看看正确答案👇','这次记住它，下次就是你的了','小恐龙也会摔跤，爬起来继续🦖','错一次，记得更牢哦','别灰心，一会儿再来挑战它！','好险！只差一点点'];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function runView(){const r=S.run;if(!r){page='home';return homeV()}const it=r.items[r.i];if(!it)return fin();cur={h:0,tile:0,done:0};const dg=r.ctx=='diag',pr=`<div class="mu">${dg?'能力诊断':r.ctx=='mist'?'错题专练':r.ctx=='gram'?'语法练习':'今日任务'} · 第 ${r.i+1}/${r.items.length} 题</div><div class="bar"><i style="width:${r.i/r.items.length*100}%"></i></div>`;let b='';
+ if(it.t=='l'){const w=W(it.id);b=`<div class="mu">新词卡 · ${w.pk}</div><div class="big">${w.en}</div><h2>${w.zh}</h2><div>${w.ipa||''} ${spk(w.en)}</div>${w.ex?exH(w):''}<p class="mu">音标/例句为AI生成待核验；朗读为机器合成。先看一眼，下一题就考你！</p><button class="b" onclick="S.run.i++;save();go('run')">我看懂了，测一测 →</button>`}
+ else if(it.t=='m'){const w=W(it.id),o=sh([w.zh].concat(sh(words().filter(x=>x.zh!=w.zh)).slice(0,3).map(x=>x.zh)));cur.o=o;b=`<div class="mu">这个词是什么意思？</div><div class="big">${w.en}</div>${spk(w.en)}`+o.map((x,i)=>`<button class="opt" onclick="ans(cur.o[${i}])">${x}</button>`).join('')+(dg?`<button class="opt" onclick="ans('')">我不会</button>`:'')}
+ else if(it.t=='g'){cur.o=it.o;b=`<div class="mu">${it.tp} · 第${it.lv}关 · 规则生成题，句子已核对</div><div class="big" style="font-size:24px">${it.q}</div>`+it.o.map((x,i)=>`<button class="opt" onclick="ans(cur.o[${i}])">${x}</button>`).join('')}
+ else if(it.t=='p'){const w=W(it.id),o=sh([w.ipa].concat(sh(BASE.filter(x=>x.ipa&&x.ipa!=w.ipa)).slice(0,3).map(x=>x.ipa)));cur.o=o;b=`<div class="mu">哪个是这个单词的音标？（音标为AI生成待核验）</div><div class="big">${w.en}</div>${spk(w.en)}`+o.map((x,i)=>`<button class="opt" onclick="ans(cur.o[${i}])">${x}</button>`).join('')}
+ else if(it.t=='c'){const c=CL.find(x=>x.id==it.id);cur.o=sh(c.o);b=`<div class="mu">${c.kp?'知识点：'+c.kp+' · ':''}选择填空（题源：${c.src}）</div><div class="big" style="font-size:22px">${c.q}</div>`+cur.o.map((x,i)=>`<button class="opt" onclick="ans(cur.o[${i}])">${x}</button>`).join('')}
+ else{const ls=it.t=='x',dd=it.t=='d',w=W(it.id),m=S.m[it.id+'|'+it.t],cw=(!dg&&m&&m.cw)||0;cur.mode=cw>=3?2:cw>=2?1:0;
+  b=`<div class="mu">${ls?'听发音，写单词':dd?'看句子，填入单词（注意形式）':'看中文，写英文'}${cur.mode==2?'（拼词积木模式：点字母拼出来）':cur.mode==1?'（已给首字母）':''}</div><div class="big">${ls?`<button class="b" onclick="speak('${w.en}')">🔊 点我听发音</button>`:dd?w.zh+'<div style="font-size:18px;font-weight:600">'+w.ex.replace(new RegExp(w.en,'i'),'____')+'</div>':w.zh}</div><div class="mu" id="hint">${w.en.replace(/[a-z]/gi,'＿')}　共${w.en.replace(/ /g,'').length}个字母${cur.mode?'，首字母 <b>'+w.en[0]+'</b>':''}</div><input type="text" id="inp" autocomplete="off" autocapitalize="off" ${cur.mode==2?'readonly':''} value="${cur.mode==1?w.en[0]:''}">`;
+  if(cur.mode==2){cur.tile=1;b+='<div>'+sh(w.en.replace(/ /g,'').split('')).map(c=>`<button class="tile" onclick="$('#inp').value+=this.textContent;this.disabled=1">${c}</button>`).join('')+`</div><button class="b s" onclick="go('run')">重排</button>`}
+  b+=`<br><button class="b" onclick="ans($('#inp').value)">检查</button>`+(dg?`<button class="b s" onclick="ans('')">我不会</button>`:`<button class="b s" onclick="cur.h=1;$('#hint').innerHTML='提示：${w.en[0]}${'＿'.repeat(w.en.length-2)}${w.en.slice(-1)}（用了提示，不算独立答对）'">看提示</button>`)}
+ if(it.t=='x')setTimeout(()=>speak(it.id),400);return pr+`<div class="card">${b}<div id="fb"></div></div>${r.i>0?'<button class="b s" onclick="S.run.i--;save();go(\'run\')">← 上一题</button>':''}<button class="b s" onclick="S.run.pause=1;save();go('home')">暂停，先到这里</button>`}
+function ans(v){if(cur.done)return;cur.done=1;const r=S.run,it=r.items[r.i];if(it.t=='g'){cur.done=0;return ansg(v)}let ok,right,et='',key=it.id+'|'+it.t;
+ if(it.t=='m'){right=W(it.id).zh;ok=v===right;et=ok?'':'词义混淆'}else if(it.t=='p'){right=W(it.id).ipa;ok=v===right;et=ok?'':'音标混淆'}else if('sdx'.includes(it.t)){right=it.id;ok=norm(v)===norm(right);et=ok?'':etype(norm(v),right)}else{right=CL.find(c=>c.id==it.id).a;ok=v===right;et=ok?'':'句子/语法选择错误'}
+ const as=ok&&(cur.h||cur.tile)?1:0;const a0=S.att.findIndex(a=>a.rid==r.id&&a.ri==r.i);if(a0>=0){const o=S.att.splice(a0,1)[0];if(o.pm)S.m[o.k]=o.pm;else delete S.m[o.k];r.tot--;if(o.ok&&!o.h)r.ok--}const pm=S.m[key]?JSON.parse(JSON.stringify(S.m[key])):null;S.att.push({t:now(),rid:r.id,ri:r.i,pm,k:key,ok:+ok,h:as,e:et,ctx:r.ctx,v:String(v).slice(0,40)});upd(key,ok,as);r.tot++;if(ok&&!as)r.ok++;r.st=ok&&!as?(r.st||0)+1:0;
+ const m=S.m[key];let msg=ok?`<div class="fb ok"><b>${pick(fox)}</b>${r.st>=3&&r.st%3==0?' 🔥已连续答对'+r.st+'题！':''}${as?'（用了提示/积木，明天再考一次，才算真正记住）':''}</div>`:`<div class="fb no"><b>${pick(oops)}</b><br>正确答案：<b>${right}</b>${et?'<br>错误类型：'+et:''}${m.cw>=3&&it.t=='s'?'<br>🦖 这个词连错几次了，下次换成「拼词积木」帮你练。':''}</div>`+('sdx'.includes(it.t)?`<div class="mu">照着写一遍：</div><input type="text" id="re" autocapitalize="off"><div class="mu">也可以用手指在下面手写，写完对照正确答案（暂不能自动识别手写）：</div><canvas id="pad" width="320" height="110" style="border:2px dashed var(--ln);border-radius:12px;touch-action:none;width:100%;max-width:360px"></canvas><button class="sp" style="width:auto;padding:0 10px" onclick="padClr()">清除</button>`:'');
+ $('#fb').innerHTML=msg+('sdx'.includes(it.t)?spk(it.id)+(W(it.id).ex?exH(W(it.id)):''):'')+`<button class="b" onclick="S.run.i++;save();go('run')">下一题 →</button>`;save();padInit()}
+function fin(){const r=S.run;if(r.ctx=='daily'&&!r.dict){const nw=r.items.filter(x=>x.t=='l').map(x=>({t:'x',id:x.id}));if(nw.length){r.dict=1;r.i=r.items.length;r.items.push(...nw);save();return'<div class="card"><h2>🎧 听音拼写小测</h2><p>这一组新词学完啦！现在不看中文，只听发音，把单词写出来。</p><button class="b" onclick="go(\'run\')">开始</button></div>'}}S.run=null;let h='';
+ if(r.ctx=='diag'){const res={};S.att.filter(a=>a.ctx=='diag').slice(-r.items.length).forEach(a=>{const y=a.k.split('|')[1],x=res[y]||(res[y]={n:0,ok:0});x.n++;x.ok+=a.ok});S.diag={t:now(),res};h=`<h1>诊断完成 🎉</h1>`+diagHtml()}
+ else if(r.topic!==undefined){const n=(r.res||[]).filter(Boolean).length,t=r.items.length,g=S.gr[r.topic]||(S.gr[r.topic]={u:1,b:[0,0,0]}),pass=n>=t-1,full=n==t;if(pass&&g.u==r.lv&&r.lv<3)g.u=r.lv+1;if(full)g.b[r.lv-1]=1;h=`<h1>${full?'🏅 满分通关！':pass?'✅ 过关啦！':'再接再厉 💪'}</h1><p>答对 ${n}/${t} 题。${full?'获得「第'+r.lv+'关」徽章！':pass?'再全对一次就能拿徽章哦。':'先看解析再来一次，答对 4 题就能过关。'}</p>${g.b.every(x=>x)?'<p>🏆 三关徽章集齐：这个知识点你已经是「小达人」！</p>':''}<button class="b" onclick="gl(${r.topic},${r.lv})">再闯一次</button>${pass&&r.lv<3?`<button class="b s" onclick="gl(${r.topic},${r.lv+1})">下一关 →</button>`:''}`}else h=`<h1>今天完成啦！🌟</h1><p>本轮 ${r.tot} 题，独立答对 ${r.ok} 题。答错的词已进入错题本，会按间隔再次出现。</p>`;save();return`<div class="card">${h}<button class="b" onclick="go('home')">回首页</button></div>`}
+const diagHtml=()=>{const d=S.diag;if(!d)return'<p class="mu">尚未诊断。</p>';return'<table><tr><th>模块</th><th>结果</th><th>说明</th></tr>'+Object.keys(MOD).map(k=>{const x=d.res[k];return`<tr><td>${MOD[k]}</td><td>${x?x.ok+'/'+x.n:'—'}</td><td class="mu">${x?'题量少，仅为初步判断，需补测':'未测'}</td></tr>`}).join('')+'<tr><td>词形与语法 / 阅读 / 听力</td><td>尚未评估</td><td class="mu">暂无已核验题目或真实音频</td></tr></table><p class="mu">诊断只是筛查，不能推算正式考试分数。</p>'};
+// ===== 页面 =====
+let page='home',lib='';
+let hist=[];function go(p){if(p=='home')hist=[];else if(p!=page)hist.push(page);page=p;render()}function back(){if(S.run&&page=='run'){S.run.pause=1;save()}page=hist.pop()||'home';render()}
+function render(){document.documentElement.dataset.p=['orange','purple'].includes(S.cfg.theme)?S.cfg.theme:'blue';const N=[['home','🏠','学习'],['gram','✏️','语法'],['read','📖','阅读'],['mist','📒','错题'],['rep','📊','报告'],['lib','📚','词库']];$('#nav').innerHTML=N.map(n=>`<button class="${page==n[0]?'on':''}" onclick="go('${n[0]}')"><b>${n[1]}</b>${n[2]}</button>`).join('');
+ $('#app').innerHTML=(page!='home'?'<button class="b s" onclick="back()">← 返回</button>':'')+{home:homeV,gram:gramV,run:runView,read:readV,mist:mistV,rep:repV,lib:libV}[page]()}
+function homeV(){ const d=dailyItems(),stars=S.att.filter(a=>a.ok&&!a.h).length,left=S.cfg.exam?Math.ceil((new Date(S.cfg.exam)-now())/D):null,nw=d.items.filter(x=>x.t=='l').length;
+ return`<div class="card"><div style="display:flex;align-items:center;gap:12px"><span class="logo"><span style="filter:hue-rotate(var(--hr))">🦖</span></span><h1 style="margin:0">英语学习小助手</h1></div><div class="mu">${left>0?'距考试约 '+left+' 天 · ':''}🏅 ${Object.values(S.gr).reduce((a,g)=>a+g.b.reduce((x,y)=>x+y,0),0)} 枚语法徽章</div><div class="mu">${left>42?'当前阶段：补基础（词义+拼写+基础句型）':left>14?'当前阶段：练题型（句子/语法/阅读）+错题回炉':left>0?'当前阶段：冲刺（真题模拟+错题）':'设置考试日期后显示阶段建议'}</div><div>${[['blue','#5b8def'],['orange','#f08a3c'],['purple','#9a7bf0']].map(c=>`<span class="dot" style="background:${c[1]}" onclick="S.cfg.theme='${c[0]}';save();render()"></span>`).join('')}</div></div>
+ ${S.run?`<div class="card"><h2>有未完成的${S.run.ctx=='diag'?'诊断':'任务'}</h2><button class="b" onclick="go('run')">继续（第${S.run.i+1}/${S.run.items.length}题）</button></div>`:''}
+ <div class="card"><h2>今日任务（约 ${S.cfg.min} 分钟）</h2><p>到期复习 <b>${d.due}</b> 个 · 新词 <b>${nw}</b> 个 · 共 ${d.items.filter(x=>x.t!='l').length} 题</p><p class="mu">${d.due>=Math.floor(S.cfg.min*1.5)?'复习有点多，今天先少学新词，把旧的稳住 💪':'先复习旧的，再学新词，最后做句子题。'}</p><button class="b" onclick="start('daily',dailyItems().items)" ${d.items.length?'':'disabled'}>开始今天的任务</button>${d.items.length?'':'<br><button class="b s" onclick="start(\'daily\',dailyItems(1).items)">今天没任务了，再学4个新词</button>'}</div>
+ <div class="card"><h2>能力诊断 ${S.diag?'✅':''}</h2>${diagHtml()}<button class="b s" onclick="start('diag',diagItems())">${S.diag?'重新诊断':'开始诊断（12题，约5分钟）'}</button></div>`}
+function mistV(){const f=lib||'all',ks=Object.keys(S.m).filter(k=>S.m[k].wr>0&&(f=='all'||k.endsWith('|'+f))).sort((a,b)=>S.m[b].cw-S.m[a].cw||S.m[b].wr-S.m[a].wr);
+ const rows=ks.map(k=>{const[i,y]=k.split('|'),m=S.m[k],w=y=='c'?null:W(i),errs=[...new Set(S.att.filter(a=>a.k==k&&a.e).map(a=>a.e))].join('、');return`<div class="row"><div><b>${y=='c'?CL.find(c=>c.id==i).q.slice(0,40):w.en+' '+w.zh}</b> <span class="pill">${MOD[y]}</span><div class="mu">错${m.wr}次 · 连错${m.cw} · ${st(m)} · 下次 ${new Date(m.nx).toLocaleDateString('zh-CN',{month:'numeric',day:'numeric'})}<br>${errs}</div></div></div>`}).join('');
+ return`<div class="card"><h1>错题本</h1><select onchange="lib=this.value;render()"><option value="all">全部</option>${Object.keys(MOD).map(k=>`<option value="${k}" ${f==k?'selected':''}>${MOD[k]}</option>`).join('')}</select>${rows||'<p class="mu">还没有错题。</p>'}${ks.length?`<button class="b" onclick="start('mist',${JSON.stringify(ks.slice(0,12).map(k=>({t:k.split('|')[1],id:k.split('|')[0]}))).replace(/"/g,'&quot;')})">专练这些错题</button>`:''}</div>`}
+function repV(){const A=S.att,by={};A.forEach(a=>{const y=a.k.split('|')[1],x=by[y]||(by[y]={n:0,ok:0,ind:0});x.n++;x.ok+=a.ok;x.ind+=a.ok&&!a.h});
+ const days=[...Array(7)].map((_,i)=>{const d0=new Date();d0.setHours(0,0,0,0);const s=+d0-(6-i)*D;return A.filter(a=>a.t>=s&&a.t<s+D).length}),mx=Math.max(1,...days),ms=Object.values(S.m),cnt={};ms.forEach(m=>cnt[st(m)]=(cnt[st(m)]||0)+1);
+ return`<div class="card"><h1>学习报告</h1>${A.length?'':'<p class="mu">还没有作答记录，报告将由真实答题生成。</p>'}<table><tr><th>能力</th><th>题量</th><th>正确率</th><th>独立答对率</th></tr>${Object.keys(MOD).map(k=>{const x=by[k];return`<tr><td>${MOD[k]}</td><td>${x?x.n:0}</td><td>${x?Math.round(x.ok/x.n*100)+'%':'—'}</td><td>${x?Math.round(x.ind/x.n*100)+'%':'—'}</td></tr>`}).join('')}</table><p class="mu">${A.length<30?'样本较少（<30题），数据仅供参考。':'即时正确率不等于长期掌握，请同时看延迟复测。'}</p></div>
+ <div class="card"><h2>近7天答题量</h2><div style="display:flex;gap:6px;align-items:end;height:80px">${days.map(d=>`<div style="flex:1;text-align:center"><div style="background:var(--p);height:${d/mx*60}px;border-radius:6px"></div><span class="mu">${d}</span></div>`).join('')}</div></div>
+ <div class="card"><h2>掌握状态分布</h2>${Object.keys(cnt).map(k=>`<span class="pill">${k} ${cnt[k]}</span>`).join('')||'<span class="mu">暂无</span>'}<p class="mu">待复习：${ms.filter(m=>m.nx<=now()&&m.n).length} 项</p></div>`}
+function libV(){const ws=words(),q=(window.q||'').toLowerCase(),pks=[...new Set(ws.map(w=>w.pk))];
+ return`<div class="card"><h1>词库与设置</h1><div class="mu">每日时长</div><select onchange="S.cfg.min=+this.value;save()"><option ${S.cfg.min==15?'selected':''}>15</option><option ${S.cfg.min==20?'selected':''}>20</option></select> <div class="mu">考试日期（待向学校确认）</div><input type="text" placeholder="如 2026-12-20" value="${S.cfg.exam}" onchange="S.cfg.exam=this.value;save()"></div>
+ <div class="card"><h2>哪些内容进入每日学习</h2><p class="mu">入库≠进每日任务，勾选才会进入。导入的新年级默认不勾选。</p>${pks.map(p=>`<div class="row"><label><input type="checkbox" ${isOn(p)?'checked':''} onchange="S.cfg.on['${p}']=this.checked;save()"> ${p}</label><span class="mu">${ws.filter(w=>w.pk==p).length}词</span></div>`).join('')}</div>
+ <div class="card"><h2>词条（${ws.length}）</h2><input type="text" placeholder="搜索英文或中文" oninput="window.q=this.value;$('#wl').innerHTML=wl()"><div id="wl">${wl()}</div><p class="mu">来源：外研社六上词表（家长提供），尚未与教材实物核验；音标/例句为AI生成待核验，朗读为浏览器机器合成，非教材录音。</p></div>
+ <div class="card"><h2>导入词库（CSV）</h2><p class="mu">表头：english,chinese_meaning,grade,unit。重复词条自动跳过，不影响学习记录。</p><textarea id="csv" rows="4"></textarea><button class="b s" onclick="prev()">预览</button><div id="pv"></div></div>
+ <div class="card"><h2>备份与恢复</h2><p class="mu">数据只保存在本设备的这个浏览器里。换手机、清缓存前请先备份，复制文本保存到微信/备忘录即可。</p><button class="b s" onclick="$('#bk').value=JSON.stringify(S);try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([$('#bk').value]));a.download='fox-backup.json';a.click()}catch(e){}">生成备份</button><textarea id="bk" rows="3" placeholder="备份文本显示在这里；恢复时粘贴到这里"></textarea><button class="b s" onclick="rest(this)">恢复（点两次确认）</button></div>`}
+function wl(){const q=(window.q||'').toLowerCase();return words().filter(w=>!q||w.en.toLowerCase().includes(q)||w.zh.includes(q)).slice(0,40).map(w=>`<div class="row"><span><b>${w.en}</b> ${w.ipa||''} ${w.zh} ${spk(w.en)}</span><span class="mu">${w.pk} · ${st(S.m[w.id+'|m'])}/${st(S.m[w.id+'|s'])}</span></div>`).join('')}
+let imp=[];function prev(){const L=$('#csv').value.split(/\r?\n/).filter(x=>x.trim()),ex=new Set(words().map(w=>w.id.toLowerCase())),bad=[];imp=[];L.forEach((l,i)=>{if(i==0&&/english/i.test(l))return;const c=l.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(x=>x.replace(/^"|"$/g,'').trim());if(c.length<4||!c[0]||!c[1])return bad.push(i+1);if(ex.has(c[0].toLowerCase()))return bad.push(i+1+'(重复)');ex.add(c[0].toLowerCase());imp.push({id:c[0],en:c[0],zh:c[1],pk:c[2]+' '+c[3],src:'CSV导入(来源待标注)'})});
+ $('#pv').innerHTML=`<p>可导入 ${imp.length} 条；跳过/错误行：${bad.join(', ')||'无'}</p>${imp.length?'<button class="b" onclick="S.extra.push(...imp);imp.forEach(w=>S.cfg.on[w.pk]=false);save();render()">确认导入</button>':''}`}
+let rc=0;function rest(b){let j;try{j=JSON.parse($('#bk').value);if(!j.att||!j.m)throw 0}catch(e){return alert('备份文本无效')}if(!rc){rc=1;b.textContent='再点一次：确认覆盖当前数据';return}try{localStorage.setItem('eng1_prev',JSON.stringify(S))}catch(e){}S=j;save();rc=0;go('home')}
+const rd=n=>Math.floor(Math.random()*n),pl=(a,L)=>{const n=a.length,w=Math.min(n,5),lo=Math.min(Math.floor(n*(L-1)/3),n-w),hi=Math.min(n,Math.max(Math.ceil(n*L/3),lo+w));return a[lo+rd(hi-lo)]},uq=a=>[...new Set(a)];
+const mk=(q,a,ws,why)=>({q,a,o:sh(uq([a,...ws]).slice(0,3)),why}),TC=s=>s.split('|').map(x=>x.split(','));
+const EXT=["💡 口诀：I用am，you用are，is跟着he/she/it。三单的 s 是给“他/她/它”配的小尾巴；出现 do/does 后，动词要变回原形（He doesn't like…）。", "💡 看“谁拥有”：Tom's bag = Tom 的包。复数本来有 s，只补一个撇号 '；children 没有 s，就像单数一样加 's。", "💡 数得清的（apples）用 many，数不清的（milk, money）用 much；问价钱永远用 How much。", "💡 have got 和 have 意思相同，常用于口语；只有 he/she/it 要换成 has。", "💡 比较两个人或物：形容词加 er + than。短词加 er，长词前面加 more；than 后面是被比较的对象。", "💡 can 像“万能助手”：后面永远跟动词原形，不变形、不加 s：She can swim.", "💡 like 后面要“动词变名词”：加 ing。like swimming ✓，like swim ✗。", "💡 two thousand 是具体数字，不加 s；thousands of 表示“很多很多”。", "💡 and 是“加法”，but 是“拐弯”，or 是“二选一”。", "💡 There be 的 be 看“紧挨着的那个名词”：There is a pen and two books.", "💡 看到 Look! / Listen! / now，就想到“正在发生”：am/is/are + doing。双写和去 e：swim→swimming，make→making。", "💡 看到 yesterday / last… / ago，切换到过去：be → was/were，动词变过去式（不规则的要背：go→went，buy→bought）。", "💡 看到 tomorrow / next…，用 will + 动词原形，will 后面的动词不变形。", "💡 先问：数得清吗？数得清再分单复数。a/an 看“读音”不看字母：an hour，a university。", "💡 做主语用主格（I/he），做宾语（动词或介词后面）用宾格（me/him）；my 是“我的”，mine 是“我的（东西）”。", "💡 问时间 when，问地点 where，问人 who，问谁的 whose，问原因 why，问状态/方式 how。", "💡 祈使句省略“你”，直接用动词原形开头；禁止别人做事用 Don't。", "💡 in 管“大时间”（月、年、季节），on 管“某一天”，at 管“钟点”。", "💡 It's + 形容词 + to do：It's fun to play. What about…? 用来提建议。"];
+const VB=TC('go,goes,went,going,to school|watch,watches,watched,watching,TV|play,plays,played,playing,football|like,likes,liked,liking,music|study,studies,studied,studying,English|have,has,had,having,breakfast|do,does,did,doing,homework|read,reads,read,reading,books|save,saves,saved,saving,money|spend,spends,spent,spending,pocket money|buy,buys,bought,buying,milk|make,makes,made,making,a cake|swim,swims,swam,swimming,in the lake|run,runs,ran,running,in the park|draw,draws,drew,drawing,pictures|eat,eats,ate,eating,an apple|take,takes,took,taking,photos|fly,flies,flew,flying,a kite'),NV=VB.filter(v=>v[0]!='like');
+const PL=TC('book,books|dog,dogs|box,boxes|bus,buses|watch,watches|city,cities|child,children|tooth,teeth|foot,feet|man,men|woman,women|knife,knives'),CP=TC('tall,taller,Tom is __ than Jim.|small,smaller,The cat is __ than the dog.|wide,wider,The river is __ than the road.|deep,deeper,The lake is __ than the pool.|young,younger,My brother is __ than me.|nice,nicer,This cake is __ than that one.|big,bigger,An elephant is __ than a dog.|hot,hotter,Summer is __ than spring.|heavy,heavier,The box is __ than the bag.|happy,happier,Tom is __ than Jim today.'),BE=TC('I,am|He,is|She,is|My cat,is|You,are|We,are|They,are|The dog,is|My parents,are|Tom and Amy,are'),HV=TC('I,have|You,have|We,have|They,have|Tom,has|She,has|He,has|My brother,has|The girls,have|Amy and Lily,have'),AR=TC('dog,a|book,a|cat,a|apple,an|egg,an|orange,an|umbrella,an|hour,an|university,a'),PP=TC("April,in|Sunday,on|7 o'clock,at|2026,in|my birthday,on|Monday morning,on|night,at|the morning,in|summer,in"),HM=TC('milk,much|water,much|money,much|books,many|apples,many|stamps,many|rice,much|juice,much|pencils,many'),PS=TC("Tom,Tom's|Amy,Amy's|my mother,my mother's|the girls,the girls'|the teachers,the teachers'|the children,the children's|the boys,the boys'|the men,the men's"),PR=TC('I,me,my|he,him,his|she,her,hers|we,us,our|they,them,their');
+const s3why=(b,x)=>b=='have'?'have 是特殊动词，三单是 has':/[^aeiou]y$/.test(b)?'辅音字母+y 结尾：变 y 为 i，再加 es':/(s|x|ch|sh|o)$/.test(b)?'以 s/x/ch/sh/o 结尾：加 es':'主语是第三人称单数，动词一般直接加 s',
+ pwhy=(b,x)=>/ed$/.test(x)&&x!=b?'规则动词：过去式加 ed/d（study→studied 要变 y 为 i）':'不规则动词，过去式要特别记住：'+b+' → '+x,
+ bw={am:'I 用 am',is:'单数名词和 he/she/it 用 is',are:'you、we、they 和复数名词用 are'};
+const gen={
+g3:L=>{const v=pl(NV,L),w=pick(['She','He','Tom','My mother','Amy']),t=pick(['every day','every morning']);return mk(`${w} ____ (${v[0]}) ${v[4]} ${t}.`,v[1],[v[0],v[3]],s3why(v[0],v[1]))},
+be:L=>{const r=pl(BE,L);return mk(`${r[0]} ____ in the classroom.`,r[1],['am','is','are'],`主语是 ${r[0]}：${bw[r[1]]}`)},
+poss:L=>{const r=pl(PS,L);return mk(`This is ____ room. (${r[0]})`,r[1],[r[0],r[0]+(r[1].endsWith("'s")?'s':"'s")],r[1].endsWith("s'")?"复数名词已经以 s 结尾，只在后面加撇号 '":"单数名词或不规则复数（如 children, men）加 's")},
+hm:L=>{const r=pl(HM,L);return mk(`How ____ ${r[0]} do you have?`,r[1],['much','many','long'],r[1]=='much'?r[0]+' 是不可数名词，用 how much':r[0]+' 是可数名词复数，用 how many')},
+have:L=>{const r=pl(HV,L);return mk(`${r[0]} ____ got a new bag.`,r[1],['have','has','having'],`${r[0]}：he/she/it 和单数名词用 has got，I/you/we/they 和复数用 have got`)},
+cmp:L=>{const r=pl(CP,L),a=r[0];return mk(r[2].replace('__','____ ('+a+')'),r[1],[a,'more '+a],r[1]==a+'er'?'一般直接加 er':a.endsWith('e')?'以 e 结尾，只加 r':/y$/.test(a)?'辅音+y 结尾，变 y 为 i 再加 er':'重读闭音节，双写末尾字母再加 er')},
+can:L=>{const v=pl(NV,L);return mk(`I can ____ (${v[0]}) ${v[4]}.`,v[0],[v[1],v[3]],'can 后面接动词原形，不管主语是谁都不变')},
+like:L=>{const v=pl(NV,L);return mk(`She likes ____ (${v[0]}) ${v[4]}.`,v[3],[v[0],v[1]],`like 后面接动词的 -ing 形式表示爱好：${v[0]} → ${v[3]}`)},
+prog:L=>{const v=pl(NV,L),b=pick([['They','are'],['She','is'],['He','is'],['The children','are']]);return mk(`Look! ${b[0]} ${b[1]} ____ (${v[0]}) ${v[4]}.`,v[3],[v[0],v[1]],`正在做的事：am/is/are + doing。${v[0]} → ${v[3]}`)},
+will:L=>{const v=pl(NV,L),t=pick(['Tomorrow','Next week']);return mk(`${t} I will ____ (${v[0]}) ${v[4]}.`,v[0],[v[1],v[3]],'will 后面接动词原形，不变形')},
+past:L=>{const v=pl(NV,L),t=pick(['Yesterday','Last week']);return mk(`${t} I ____ (${v[0]}) ${v[4]}.`,v[2],[v[0],v[1],v[0]+'ed'],'这句话说的是过去的事，用过去式。'+pwhy(v[0],v[2]))},
+ww:L=>{const r=pl(BE,L),a=r[1]=='are'?'were':'was';return mk(`${r[0]} ____ at home yesterday.`,a,['was','were','is'],`过去式：am/is → was，are → were。${r[0]} 现在用 ${r[1]}，所以过去用 ${a}`)},
+pl:L=>{const r=pl(PL,L);return mk(`There are two ____ (${r[0]}) here.`,r[1],[r[0],r[0]+'s',r[0]+'es'],r[1]==r[0]+'s'?'规则名词：直接加 s':r[1]==r[0]+'es'?'以 s/x/ch/sh 结尾加 es':/ies$/.test(r[1])?'辅音+y 结尾：变 y 为 i 再加 es':'不规则复数，要特别记：'+r[0]+' → '+r[1])},
+art:L=>{const r=pl(AR,L);return mk(`This is ____ ${r[0]}.`,r[1],['a','an','some'],r[1]=='an'?`${r[0]} 以元音音素开头，用 an`:`${r[0]} 以辅音音素开头，用 a`+(r[0]=='university'?'（university 读作 /j/ 开头）':''))},
+prep:L=>{const r=pl(PP,L);return mk(`We meet ____ ${r[0]}.`,r[1],['in','on','at'],r[1]=='in'?'月份、年份、季节、in the morning 用 in':r[1]=='on'?'具体的某一天、星期、生日用 on':'具体钟点、at night 用 at')},
+pron:L=>{const r=pl(PR,L);return mk(`Please help ____. (${r[0]})`,r[1],[r[0],r[2]],`动词后面用宾格：${r[0]} → ${r[1]}`)}};
+const gs=k=>L=>{const t=TB[k].split('\n').map(l=>l.split('|')),r=pl(t,L);return mk(r[0],r[1],r[2].split('/'),r[3])};
+const TB={"THOU": "There are two ____ people in the stadium.|thousand|thousands/thousand of|two 是具体数字，thousand 不加 s\nMy school has three ____ books.|thousand|thousands/thousand of|three 是具体数字，thousand 不加 s\n____ of birds fly over the lake.|Thousands|Thousand/Thousand's|没有具体数字，表示“成千上万”，用 thousands of\nEvery year, thousands ____ people visit the Great Wall.|of|to/in|thousands of 后面接名词，表示“成千上万的……”", "CONJ": "I have a pen ____ a ruler.|and|but/or|两样东西并列，用 and\nDo you want tea ____ milk?|or|and/but|选择疑问句，用 or\nI like apples, ____ I don't like bananas.|but|and/or|前后意思相反，用 but 表示转折\nI want to go out, ____ it is raining.|but|and/or|想出去却下雨，意思转折，用 but\nIs the lake deep ____ wide?|or|and/but|二选一，用 or", "THERE": "There ____ a pen on the desk.|is|are/am|a pen 是单数，用 There is\nThere ____ two books on the desk.|are|is/am|two books 是复数，用 There are\nThere ____ some water in the bottle.|is|are/am|water 是不可数名词，用 is\nThere ____ a book and two pens on the desk.|is|are/am|就近原则：be 动词看紧挨着的 a book，用 is\nThere ____ two pens and a book on the desk.|are|is/am|就近原则：紧挨着的是 two pens，用 are", "WH": "____ is your birthday? —In April.|When|Where/Who|回答是时间，所以问 when\n____ is your English teacher? —Ms Li.|Who|What/When|回答是人，所以问 who\n____ do you live? —In Dazhou.|Where|When/Who|回答是地点，所以问 where\n____ bag is this? —It's Tom's.|Whose|Who/Which|回答 Tom's 表示“谁的”，所以问 whose\n____ do you like, tea or milk? —Milk.|Which|What/Who|在给定的几个里选一个，用 which\n____ are you late? —Because I missed the bus.|Why|How/What|回答用 because，所以问 why\n____ old are you? —I'm twelve.|How|What/Who|问年龄用 how old\n____ is the pen? —Five yuan.|How much|How many/How old|问价格用 how much\n____ students are there? —Forty.|How many|How much/How long|students 可数且是复数，用 how many", "IMP": "____ run in the classroom!|Don't|Doesn't/Not|否定祈使句：Don't + 动词原形\n____ your hands before lunch.|Wash|Washes/Washing|祈使句以动词原形开头\nPlease ____ quiet in the library.|be|is/are|祈使句里 be 要用原形 be\nDon't ____ late for school.|be|is/are|Don't 后面接动词原形 be\n____ talk in class, please.|Don't|Doesn't/Not|劝人不要做某事，用 Don't + 动词原形", "FIX": "It's fun ____ play football.|to|for/of|句型：It's + 形容词 + to do sth.\nIt's important ____ save money.|to|for/in|句型：It's + 形容词 + to do sth.\nWould you like tea ____ milk?|or|and/but|选择疑问句：…… or ……?\n—Let's go to the park. —____ about the lake?|What|Who/Why|What about …? 用来提建议"};
+const GG=[[gen.g3,gen.be],[gen.poss],[gen.hm],[gen.have],[gen.cmp],[gen.can],[gen.like],[gs('THOU')],[gs('CONJ')],[gs('THERE')],[gen.prog],[gen.past,gen.ww],[gen.will],[gen.pl,gen.art],[gen.pron],[gs('WH')],[gs('IMP')],[gen.prep],[gs('FIX')]];
+function gramV(){const bd=g=>g?g.b.filter(Boolean).length:0;return`<div class="card"><h1>语法闯关</h1><p class="mu">每个知识点：先学习，再闯三关（由易到难，题目每次重新出）。一关 5 题，答对 4 题过关，全对得徽章 🏅；三关全对得「小达人」🏆。答错会告诉你错在哪里。</p></div>`+GR.map((g,i)=>{const s=S.gr[i]||{u:1,b:[0,0,0]};return`<div class="card"><details><summary><b>${g[0]}</b> <span>${'🏅'.repeat(bd(s))}${bd(s)==3?'🏆':''}</span></summary><p>${g[1]}</p><p>${EXT[i]}</p>${[1,2,3].map(L=>`<button class="b ${L<=s.u?'':'s'}" ${L<=s.u?'':'disabled'} onclick="gl(${i},${L})">${L<=s.u?'':'🔒'} 第${L}关${s.b[L-1]?' 🏅':''}</button>`).join('')}</details></div>`}).join('')}
+function gl(i,L){S.gh=S.gh||{};const h=S.gh[i]||(S.gh[i]=[]),it=[],seen={};let k=0;while(it.length<5&&k++<150){const q=pick(GG[i])(k>=60?1+rd(3):L);if(seen[q.q]||(h.includes(q.q)&&k<100)||!/____/.test(q.q)||q.o.length<2||!q.o.includes(q.a))continue;seen[q.q]=1;it.push({t:'g',tp:GR[i][0],lv:L,...q})}it.forEach(x=>h.push(x.q));if(h.length>500)h.splice(0,h.length-500);start('gram',it);S.run.topic=i;S.run.lv=L;S.run.v2=1;save()}
+function ansg(v){if(cur.done)return;cur.done=1;const r=S.run,it=r.items[r.i],ok=v===it.a;r.res=r.res||[];r.res[r.i]=ok?1:0;r.st=ok?(r.st||0)+1:0;$('#fb').innerHTML=(ok?`<div class="fb ok"><b>${pick(fox)}</b>${r.st>=3?' 🔥连对'+r.st+'题':''}<div class="mu">${it.why}</div></div>`:`<div class="fb no"><b>${pick(oops)}</b><br>正确答案：<b>${it.a}</b><br>错误原因与解析：${it.why}</div>`)+`<button class="b" onclick="S.run.i++;save();go('run')">下一题 →</button>`;save()}
+function padInit(){const c=$('#pad');if(!c||!c.getContext)return;const x=c.getContext('2d');x.lineWidth=4;x.lineCap='round';x.strokeStyle=getComputedStyle(document.body).color;let d=0;const P=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};c.onpointerdown=e=>{d=1;const q=P(e);x.beginPath();x.moveTo(q[0],q[1]);c.setPointerCapture(e.pointerId)};c.onpointermove=e=>{if(d){const q=P(e);x.lineTo(q[0],q[1]);x.stroke()}};c.onpointerup=()=>d=0}
+const padClr=()=>{const c=$('#pad');c.getContext('2d').clearRect(0,0,c.width,c.height)};
+let ru=0;
+const QA=`1|What do you do with your pocket money?|你用零花钱做什么？|I save some and spend some.|I saves some pocket money.|He are a shopkeeper.|主语是 I，动词用原形，意思也通顺
+1|Is saving money a good habit?|存钱是个好习惯吗？|Yes, it is.|Yes, I am.|No, he doesn't.|Is it …? 要用 Yes, it is. 回答
+1|How much is the gold crayon?|这支金色蜡笔多少钱？|It is ten yuan.|They are ten yuan.|He is ten yuan.|crayon 是单数，用 It is，回答要说钱数
+2|Is "dogs are smarter than cats" a fact or an opinion?|“狗比猫聪明”是事实还是看法？|It is an opinion.|They are facts.|It is a fruit.|这是个人想法，不能直接证明，所以是 opinion（看法）
+2|Can you give me a reason for your opinion?|你能说说你看法的理由吗？|Yes, because dogs help people.|Yes, I am a reason.|No, it is April.|问理由，要用 because 来回答
+3|Which is bigger, the Sahara or the Antarctic Desert?|撒哈拉和南极荒漠哪个更大？|The Antarctic Desert is bigger.|The Sahara are bigger.|Waterfall is bigger.|南极荒漠面积更大；The Sahara 是单数，要用 is
+3|What is the Qinghai-Tibet Plateau called?|青藏高原被称为什么？|It is called the Roof of the World.|It is called a deep lake.|It is a young traveller.|青藏高原又叫“世界屋脊”
+4|What can an inventor do?|发明家能做什么？|An inventor can make new things.|An inventor can makes a fan.|An inventor are young.|can 后面接动词原形 make
+4|What do you need to make a paper fan?|做纸扇需要什么？|I need paper and glue.|I needs a window.|He is a drum.|I 后面动词用原形 need，paper 和 glue 是做扇子的材料
+5|What is the matter?|你怎么了？|I have a sore throat.|I am a headache.|He have a fever.|身体不舒服用 have + 症状；He 要用 has
+5|Do you have a fever?|你发烧了吗？|No, I do not.|No, I am not.|Yes, he does.|Do you …? 用 Yes, I do. 或 No, I do not. 回答
+6|When is the Water-splashing Festival?|泼水节在什么时候？|It is in April.|It is on April.|It is at April.|月份前面用 in
+6|Can you speak English?|你会说英语吗？|Yes, I can.|Yes, I speak can.|No, I does not.|Can you …? 用 Yes, I can. 或 No, I cannot. 回答`.split('\n').map(l=>l.split('|'));let rm='story';
+function qk(b,ok,w){const p=b.parentNode;p.querySelectorAll('button').forEach(x=>x.disabled=1);b.style.borderColor=ok?'#1f9d63':'#d4402f';p.insertAdjacentHTML('beforeend',`<div class="fb ${ok?'ok':'no'}"><b>${ok?pick(fox):pick(oops)}</b> ${w}</div>`)}
+function readV(){const u=ru||(()=>{const l=S.att.filter(a=>/\|[ms]$/.test(a.k)).pop(),w=l&&W(l.k.split('|')[0]),m=w&&w.pk.match(/U(\d)/);return m?+m[1]:1})();
+ const hl=t=>t.replace(new RegExp('\\b('+BASE.filter(w=>w.pk=='六上 U'+u).map(w=>w.en).join('|')+')\\w{0,2}\\b','gi'),'<b>$&</b>');
+ const tabs=[['story','📖 小故事'],['qa','💬 你问我答'],['sci','🔬 科普']].map(t=>`<button class="b ${rm==t[0]?'':'s'}" onclick="rm='${t[0]}';render()">${t[1]}</button>`).join('');
+ let h=`<div class="card"><h1>阅读</h1>${tabs}${rm=='sci'?'':`<select onchange="ru=+this.value;render()">${[1,2,3,4,5,6].map(i=>`<option value="${i}" ${i==u?'selected':''}>Unit ${i}</option>`).join('')}</select>`}<p class="mu">先读英文，需要时再点“显示中文”。内容为AI编写，真实性有待考察。</p></div>`;
+ if(rm=='story')h+=`<div class="card"><h2>单词小故事 ${spk(ST[u][0])}</h2><p>${hl(ST[u][0])}</p><details><summary>显示中文</summary>${ST[u][1]}</details></div>`;
+ else if(rm=='qa')h+=QA.filter(q=>q[0]==u).map(q=>`<div class="card"><b>🦖 ${q[1]}</b> ${spk(q[1])}<details><summary>显示中文</summary>${q[2]}</details>`+sh([[q[3],1],[q[4],0],[q[5],0]]).map(x=>`<button class="opt" onclick="qk(this,${x[1]},'${q[6]}')">${x[0]}</button>`).join('')+'</div>').join('');
+ else h+=Object.keys(SC).map(k=>`<div class="card"><h2>${SC[k][0]} <span class="pill">Unit ${k}</span> ${spk(SC[k][1])}</h2><p class="mu">⚠️ AI根据公开常识编写，真实性有待考察（尚未对照书籍/论文），请勿当作权威资料。</p><p>${SC[k][1]}</p><details><summary>显示中文</summary>${SC[k][2]}</details></div>`).join('');
+ return h}
+render();
+</script></body></html>
